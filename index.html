@@ -568,6 +568,7 @@ const S = { main: null, rate: null, reason: '없음' };
   renderHistory();
   renderWeeklyData();
   renderMonthlyData();
+  renderSeasonBanner();
 
   // already checked in today?
   const rec = getRecords()[todayKey()];
@@ -1074,6 +1075,82 @@ function rchip(el) {
   const parent = el.closest('.chip-group');
   if (parent) parent.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
+}
+
+// ============================================================
+// SEASON LIBRARY
+// ============================================================
+function getSeasonData() {
+  const now = new Date();
+  const month = now.getMonth() + 1;
+  const day = now.getDate();
+  const suneungDate = new Date(now.getFullYear(), 10, 14);
+  const dday = Math.ceil((suneungDate - now) / (1000 * 60 * 60 * 24));
+
+  const data = {
+    1:  { msg: "이제 시작이다.\n재수를 결정했다면 지금 이 순간의 선택이 1년을 좌우한다.\n연간 로드맵부터 잡아라.\n상하반기, 분기별 목표, 과목별 세부계획 순서로.", principle: "주력과목 확정 후 하루 6시간 고정" },
+    2:  day >= 16 ? { msg: "3월 모평이 코앞이다.\n3월 모고는 지난해까지의 학습상황을 확인하는 개념이다.\n부담 없이 봐라. 이 결과로 과목별 루틴을 세우면 된다.", principle: "주력과목 루틴 안착이 먼저" } : null,
+    3:  day >= 24
+          ? { msg: "3월 모평이 끝났다.\n지금 점수에 흔들릴 필요 없다. 3월은 참고용이다.\n지금의 기세를 몰아 6평까지 달려가면 된다.", principle: "점수보다 pace!" }
+          : null,
+    4:  { msg: "기세를 몰아 새로운 개념들, 원리들, 과목별 진도를 빠르게 정복해야 한다.\n순공부시간 최대한 확보하자.", principle: "주력과목 루틴 사수" },
+    5:  day <= 7
+          ? { msg: "이번 달 5월 7일 경기교육청 모고가 있다.\n수능 시간에 맞게 셀프테스트하라.\n지금 페이스 그대로 밀고 가면 된다.", principle: "교육청 모고 셀프테스트 + 1일 순공부시간 12시간" }
+          : { msg: "이제 6평 카운트다운이다.\n전 과목 완벽한 6평점수? 최소 2과목만 건져라.", principle: "6평 대비 풀타임 모의고사 3회 이상" },
+    6:  day <= 3
+          ? { msg: "이제 6평 카운트다운이다.\n전 과목 완벽한 6평점수? 최소 2과목만 건져라.", principle: "6평 대비 풀타임 모의고사 3회 이상" }
+          : day <= 10
+          ? { msg: "6평 치르느라 고생이 많았어요.\n가채점 점수를 확인하고, 잘 본 과목을 위해 노력한 본인에게 칭찬해주세요.\n그 과목들이 당신을 대학으로 이끌거예요.\n혹시 아쉬운 결과가 나왔더라도 우리는 아직 하반기가 남아있어요.", principle: "잘 본 과목 더 강하게" }
+          : { msg: "6평 성적표가 나왔다. 이게 상반기의 성적표다.\n잘 나온 과목은 더 강하게 집중해라.\n아쉬운 과목은 어느 파트에서 득점할지 세밀하게 분석해라.\n이번 달 RDR에서 하반기 로드맵을 확정하라.", principle: "하반기 로드맵 이번 RDR에서 확정" },
+    7:  day <= 8
+          ? { msg: "이번 달 7월 8일 인천교육청 모고가 있다.\n별도 준비 필요 없다. 지금 페이스가 최고의 준비다.\n여름 체력전이 시작됐다. 무너지지 않는 것이 목표다.", principle: "주력과목 하루 6시간, 무너지지 않기" }
+          : { msg: "여름이 제일 무너지기 쉬운 구간이다.\n지금은 성적을 올리는 시기가 아니라, 무너지지 않는 시기다.", principle: "건강관리에 집중" },
+    8:  day <= 10
+          ? { msg: "이번 달은 모의고사 없는 구간이다.\n9평 준비에만 집중하면 된다.\n더운데 버티는 것 자체가 전략이다. 몸 관리가 먼저다.", principle: "루틴 유지 + 몸 관리" }
+          : { msg: "9평이 코앞이다.\n지금까지 쌓은 게 있다. 믿고 가라.\n9평 후에는 하루 쉬어라.", principle: "슬럼프 주의" },
+    9:  day <= 1
+          ? { msg: "9평이 코앞이다.\n지금까지 쌓은 게 있다. 믿고 가라.\n9평 후에는 하루 쉬어라.", principle: "슬럼프 주의" }
+          : day <= 11
+          ? { msg: "9평 무사히 잘 보셨나요?\n가채점 기준으로 수능최저 충족 여부를 먼저 확인하라.\n수시 원서는 정시 예상 성적을 감안해서 전략적으로 지원하라.\n원서 접수 마감 전까지가 가장 중요한 판단의 시간이다.", principle: "수시 원서, 전략적 지원" }
+          : { msg: "이제 수시원서는 잊고 수능만 생각하라.\n주력과목 유지가 전부다.", principle: "암기과목 체크" },
+    10: { msg: `수능까지 ${dday}일 남았다. 곧 끝난다.\n실전모고와 암기과목 마무리가 핵심이다.`, principle: "실전모고 주 2회 이상" },
+    11: day <= 19
+          ? { msg: `수능까지 ${dday}일 남았다.\n여기까지 온 것만으로 이미 당신은 위너다.\n무언가를 더 하려 하지 마라.\n일주일에 2회 이상 풀타임 모의고사. 이 원칙만 지켜라.`, principle: "풀타임 모의고사 주 2회, 자신을 믿기" }
+          : { msg: "이 시험을 끝까지 치른 것, 그 자체로 이미 증명이다.\n논술 상향지원 학교가 있다면 최저 상관없이 응시하라.\n수능 성적표가 나오면 12월에 다시 만나자.", principle: "논술 응시 + 정시 전략 바로 시작" },
+    12: { msg: "입시의 본게임 정시 지원 시즌이다.\n표본을 끝까지 추적하는 치밀함이 결과를 바꾼다.", principle: "꼼꼼한 표본분석으로 전략적 지원" }
+  };
+  return data[month] || null;
+}
+
+function renderSeasonBanner() {
+  const existing = document.getElementById('season-banner');
+  if (existing) existing.remove();
+  const data = getSeasonData();
+  if (!data) return;
+
+  const banner = document.createElement('div');
+  banner.id = 'season-banner';
+  banner.style.cssText = 'background:var(--accent-light);border:0.5px solid var(--accent);border-radius:var(--radius-lg);margin-bottom:12px;overflow:hidden;';
+  banner.innerHTML = `
+    <div id="season-collapsed" onclick="toggleSeason()" style="padding:11px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+      <div style="font-size:13px;color:var(--accent-dark);font-weight:600;">✓ ${data.principle}</div>
+      <div id="season-arrow" style="font-size:11px;color:var(--accent);margin-left:8px;flex-shrink:0;">전략 보기 ▾</div>
+    </div>
+    <div id="season-expanded" style="display:none;padding:0 16px 13px;border-top:0.5px solid var(--accent);">
+      <div style="font-size:11px;font-weight:700;color:var(--accent-dark);letter-spacing:0.8px;text-transform:uppercase;margin:10px 0 7px;">월간 전략 브리핑</div>
+      <div style="font-size:14px;line-height:1.75;color:var(--text);white-space:pre-line;">${data.msg}</div>
+    </div>`;
+
+  const screen = document.getElementById('screen-daily');
+  screen.insertBefore(banner, screen.firstChild);
+}
+
+function toggleSeason() {
+  const expanded = document.getElementById('season-expanded');
+  const arrow = document.getElementById('season-arrow');
+  const isOpen = expanded.style.display !== 'none';
+  expanded.style.display = isOpen ? 'none' : 'block';
+  arrow.textContent = isOpen ? '전략 보기 ▾' : '접기 ▴';
 }
 
 function switchTab(tab) {
