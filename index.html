@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>독학도우미</title>
+<title>독코치 DokCoach | 데이터 기반 셀프코칭 시스템</title>
 <style>
 :root {
   --bg: #f5f3ee;
@@ -53,8 +53,10 @@ body {
   align-items: center;
   justify-content: space-between;
 }
-.logo { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; color: var(--text); }
-.logo span { color: var(--accent); }
+.brand-wrap { display: flex; flex-direction: column; gap: 4px; }
+.brand-title { font-size: 24px; font-weight: 800; line-height: 1.2; color: #111827; }
+.brand-title span { font-size: 20px; font-weight: 700; color: #4b5563; margin-left: 6px; }
+.brand-subtitle { font-size: 12px; color: var(--text3); font-weight: 400; }
 .date-chip {
   font-size: 12px; color: var(--text3);
   background: var(--surface);
@@ -310,7 +312,10 @@ textarea::placeholder { color: var(--text3); }
 <body>
 <div class="app-shell">
   <div class="header">
-    <div class="logo">독학<span>도우미</span></div>
+    <div class="brand-wrap">
+      <div class="brand-title">독코치<span>DokCoach</span></div>
+      <div class="brand-subtitle">데이터 기반 셀프코칭 시스템</div>
+    </div>
     <div class="date-chip" id="today-label"></div>
   </div>
   <div class="tab-nav">
@@ -438,9 +443,9 @@ textarea::placeholder { color: var(--text3); }
 // ============================================================
 // STORAGE HELPERS
 // ============================================================
-const STORE_KEY = 'dhd_records';
-const WEEKLY_DECL_KEY = 'dhd_weekly_decl';
-const MONTHLY_DECL_KEY = 'dhd_monthly_decl';
+const STORE_KEY = 'dkc_records';
+const WEEKLY_DECL_KEY = 'dkc_weekly_decl';
+const MONTHLY_DECL_KEY = 'dkc_monthly_decl';
 
 function getRecords() {
   try { return JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); } catch(e) { return {}; }
