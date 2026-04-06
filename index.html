@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>독학도우미</title>
+<style>
+:root {
+  --bg: #f5f3ee;
+  --surface: #ffffff;
+  --surface2: #f0ede8;
+  --border: rgba(0,0,0,0.07);
+  --border2: rgba(0,0,0,0.13);
+  --text: #1a1816;
+  --text2: #6b6560;
+  --text3: #a09890;
+  --accent: #c17f3a;
+  --accent-light: #f5e9d8;
+  --accent-dark: #9c6228;
+  --success: #3a8a5a;
+  --success-bg: #e8f5ee;
+  --success-border: #b8dfc8;
+  --danger: #c0392b;
+  --danger-bg: #fcecea;
+  --danger-border: #f0b8b2;
+  --info: #2c6fad;
+  --info-bg: #e8f0fa;
+  --info-border: #b8d0f0;
+  --warn: #b87020;
+  --warn-bg: #fdf3e3;
+  --warn-border: #f0d098;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --shadow: 0 1px 4px rgba(0,0,0,0.06), 0 0 0 0.5px rgba(0,0,0,0.07);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+  min-height: 100vh;
+}
+.app-shell {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.header {
+  padding: 20px 20px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logo { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; color: var(--text); }
+.logo span { color: var(--accent); }
+.date-chip {
+  font-size: 12px; color: var(--text3);
+  background: var(--surface);
+  padding: 4px 10px; border-radius: 20px;
+  border: 0.5px solid var(--border2);
+}
+.tab-nav {
+  display: flex; gap: 4px;
+  padding: 14px 20px 0;
+}
+.tab-btn {
+  flex: 1; padding: 9px 4px;
+  background: var(--surface);
+  border: 0.5px solid var(--border2);
+  border-radius: var(--radius);
+  color: var(--text3);
+  font-size: 12px; font-weight: 500;
+  cursor: pointer; transition: all 0.18s;
+  font-family: inherit; text-align: center;
+}
+.tab-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  font-weight: 700;
+}
+.tab-btn:not(.active):hover { color: var(--text2); border-color: var(--border2); }
+.main { flex: 1; padding: 14px 20px 40px; }
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* Cards */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.card-title {
+  font-size: 11px; font-weight: 700;
+  color: var(--text3); letter-spacing: 0.8px;
+  text-transform: uppercase; margin-bottom: 12px;
+}
+.section-label {
+  font-size: 12px; color: var(--text2);
+  margin-bottom: 8px; font-weight: 500;
+}
+
+/* Toggle */
+.toggle-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.toggle-btn {
+  padding: 11px; border-radius: var(--radius);
+  border: 0.5px solid var(--border2);
+  background: var(--surface2);
+  color: var(--text2); font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: all 0.15s; font-family: inherit; text-align: center;
+}
+.toggle-btn:hover { border-color: var(--accent); color: var(--text); }
+.toggle-btn.sel-y { background: var(--success-bg); border-color: var(--success-border); color: var(--success); }
+.toggle-btn.sel-n { background: var(--danger-bg); border-color: var(--danger-border); color: var(--danger); }
+
+/* Rate */
+.rate-group { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.rate-btn {
+  padding: 11px 8px; border-radius: var(--radius);
+  border: 0.5px solid var(--border2);
+  background: var(--surface2);
+  color: var(--text2); font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: all 0.15s; font-family: inherit; text-align: center;
+  line-height: 1.4;
+}
+.rate-btn:hover { border-color: var(--border2); color: var(--text); }
+.rate-btn.sel-high { background: var(--success-bg); border-color: var(--success-border); color: var(--success); }
+.rate-btn.sel-mid { background: var(--info-bg); border-color: var(--info-border); color: var(--info); }
+.rate-btn.sel-low { background: var(--warn-bg); border-color: var(--warn-border); color: var(--warn); }
+
+/* Chips */
+.chip-group { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 14px; }
+.chip {
+  padding: 7px 14px; border-radius: 20px;
+  border: 0.5px solid var(--border2);
+  background: var(--surface2);
+  color: var(--text2); font-size: 13px;
+  cursor: pointer; transition: all 0.15s; font-family: inherit;
+}
+.chip:hover { border-color: var(--accent); color: var(--text); }
+.chip.selected { background: var(--accent-light); border-color: var(--accent); color: var(--accent-dark); font-weight: 600; }
+
+/* Buttons */
+.btn {
+  width: 100%; padding: 12px 16px;
+  border-radius: var(--radius);
+  border: 0.5px solid var(--border2);
+  background: var(--surface2);
+  color: var(--text); font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: all 0.15s; font-family: inherit;
+  text-align: left; margin-bottom: 7px;
+  display: flex; align-items: center; gap: 10px;
+}
+.btn:hover { background: var(--surface); border-color: var(--accent); }
+.btn.selected { background: var(--accent-light); border-color: var(--accent); color: var(--accent-dark); }
+.btn-primary {
+  background: var(--accent); color: #fff;
+  border-color: var(--accent); font-weight: 700;
+  text-align: center; justify-content: center;
+}
+.btn-primary:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
+.btn-ghost {
+  background: transparent; border-color: var(--border);
+  color: var(--text3); font-size: 13px;
+}
+.btn-ghost:hover { border-color: var(--border2); color: var(--text2); }
+.btn-icon {
+  width: 26px; height: 26px;
+  background: var(--surface);
+  border-radius: 6px; border: 0.5px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; flex-shrink: 0; color: var(--text3);
+}
+
+/* Message boxes */
+.msg-box {
+  border-radius: var(--radius-lg); padding: 14px 16px;
+  margin-bottom: 12px; border-left: 3px solid;
+}
+.msg-box.praise { background: var(--success-bg); border-color: var(--success); }
+.msg-box.warn-msg { background: var(--warn-bg); border-color: var(--warn); }
+.msg-box.care { background: var(--info-bg); border-color: var(--info); }
+.msg-box.neutral { background: var(--surface2); border-color: var(--border2); }
+.msg-text { font-size: 14px; line-height: 1.75; color: var(--text); }
+.msg-label { font-size: 11px; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 5px; color: var(--text3); }
+
+/* Q boxes */
+.q-box {
+  background: var(--surface2);
+  border: 0.5px solid var(--border2);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px; margin-bottom: 10px;
+}
+.q-text { font-size: 14px; color: var(--text); line-height: 1.65; margin-bottom: 12px; font-weight: 500; }
+
+/* Action box */
+.action-box {
+  background: var(--accent-light);
+  border: 0.5px solid var(--accent);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px; margin-top: 4px;
+}
+.action-label { font-size: 11px; font-weight: 700; color: var(--accent-dark); letter-spacing: 0.5px; margin-bottom: 6px; }
+.action-text { font-size: 14px; color: var(--text); line-height: 1.7; }
+
+/* Stats */
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.stat-card {
+  background: var(--surface2); border-radius: var(--radius);
+  padding: 12px; border: 0.5px solid var(--border);
+}
+.stat-label { font-size: 11px; color: var(--text3); margin-bottom: 4px; }
+.stat-value { font-size: 22px; font-weight: 700; color: var(--text); }
+.stat-unit { font-size: 12px; color: var(--text2); margin-left: 2px; font-weight: 400; }
+
+/* Type badge */
+.type-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border-radius: 20px;
+  font-size: 12px; font-weight: 700; margin-bottom: 12px;
+}
+.type-a { background: var(--success-bg); color: var(--success); border: 0.5px solid var(--success-border); }
+.type-b { background: var(--warn-bg); color: var(--warn); border: 0.5px solid var(--warn-border); }
+.type-c { background: var(--danger-bg); color: var(--danger); border: 0.5px solid var(--danger-border); }
+
+/* Declaration */
+.decl-box {
+  background: var(--surface2); border: 0.5px solid var(--border2);
+  border-radius: var(--radius-lg); padding: 4px 16px; margin-bottom: 12px;
+}
+.decl-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 0; border-bottom: 0.5px solid var(--border); font-size: 14px;
+}
+.decl-row:last-child { border-bottom: none; }
+.decl-key { color: var(--text3); font-size: 13px; flex-shrink: 0; }
+.decl-input {
+  background: transparent; border: none;
+  color: var(--accent-dark); font-size: 13px; font-weight: 600;
+  font-family: inherit; text-align: right; outline: none; width: 200px;
+}
+.decl-input::placeholder { color: var(--text3); font-weight: 400; }
+
+/* Streak */
+.streak-row { display: flex; gap: 6px; align-items: center; }
+.streak-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--surface2); border: 0.5px solid var(--border2);
+}
+.streak-dot.done { background: var(--accent); border-color: var(--accent); }
+.streak-dot.today {
+  background: var(--accent-light); border: 2px solid var(--accent);
+  width: 12px; height: 12px;
+}
+
+/* RDR */
+.rdr-step-nav { display: flex; gap: 6px; margin-bottom: 16px; }
+.rdr-step-dot { flex: 1; height: 3px; border-radius: 2px; background: var(--surface2); transition: background 0.3s; }
+.rdr-step-dot.done { background: var(--success); }
+.rdr-step-dot.active { background: var(--accent); }
+.step-tag { font-size: 11px; font-weight: 700; letter-spacing: 1px; color: var(--accent); margin-bottom: 4px; }
+.step-title { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 6px; line-height: 1.3; }
+.step-desc { font-size: 13px; color: var(--text2); line-height: 1.65; margin-bottom: 16px; }
+
+/* Divider */
+.divider { height: 0.5px; background: var(--border2); margin: 14px 0; }
+
+/* Saved banner */
+.saved-banner {
+  background: var(--success-bg); border: 0.5px solid var(--success-border);
+  border-radius: var(--radius); padding: 10px 14px;
+  font-size: 13px; color: var(--success); margin-bottom: 12px; display: none;
+}
+
+/* History list */
+.history-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 0; border-bottom: 0.5px solid var(--border); font-size: 13px;
+}
+.history-item:last-child { border-bottom: none; }
+.history-date { color: var(--text3); font-size: 12px; }
+.history-tags { display: flex; gap: 5px; }
+.htag {
+  padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600;
+}
+.htag-y { background: var(--success-bg); color: var(--success); }
+.htag-n { background: var(--danger-bg); color: var(--danger); }
+.htag-high { background: var(--success-bg); color: var(--success); }
+.htag-mid { background: var(--info-bg); color: var(--info); }
+.htag-low { background: var(--warn-bg); color: var(--warn); }
+
+textarea {
+  width: 100%; background: var(--surface);
+  border: 0.5px solid var(--border2); border-radius: var(--radius);
+  color: var(--text); font-family: inherit; font-size: 14px;
+  padding: 10px 12px; resize: none; outline: none; line-height: 1.6;
+}
+textarea:focus { border-color: var(--accent); }
+textarea::placeholder { color: var(--text3); }
+
+.hidden { display: none !important; }
+.flow-enter { animation: fadeUp 0.22s ease; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <div class="header">
+    <div class="logo">독학<span>도우미</span></div>
+    <div class="date-chip" id="today-label"></div>
+  </div>
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('daily')">매일 체크인</button>
+    <button class="tab-btn" onclick="switchTab('weekly')">주간 코칭</button>
+    <button class="tab-btn" onclick="switchTab('monthly')">월간 RDR</button>
+  </div>
+  <div class="main">
+
+    <!-- ===== DAILY ===== -->
+    <div id="screen-daily" class="screen active">
+      <div id="daily-input-area">
+        <div class="card">
+          <div class="card-title">오늘의 체크인</div>
+          <div class="section-label">주력과목 공부했나요?</div>
+          <div class="toggle-group">
+            <button class="toggle-btn" id="btn-y" onclick="selMain('Y')">✓ 했다</button>
+            <button class="toggle-btn" id="btn-n" onclick="selMain('N')">✗ 못 했다</button>
+          </div>
+          <div class="section-label">전체 실행률</div>
+          <div class="rate-group">
+            <button class="rate-btn" id="rate-high" onclick="selRate('상')">상<br><span style="font-size:11px;font-weight:400;color:var(--text3)">6h+</span></button>
+            <button class="rate-btn" id="rate-mid" onclick="selRate('중')">중<br><span style="font-size:11px;font-weight:400;color:var(--text3)">4h</span></button>
+            <button class="rate-btn" id="rate-low" onclick="selRate('하')">하<br><span style="font-size:11px;font-weight:400;color:var(--text3)">2h↓</span></button>
+          </div>
+          <div class="section-label">실패 이유 (해당 시)</div>
+          <div class="chip-group">
+            <button class="chip" onclick="selReason(this,'전략')">전략</button>
+            <button class="chip" onclick="selReason(this,'동기')">동기</button>
+            <button class="chip" onclick="selReason(this,'체력')">체력</button>
+            <button class="chip" onclick="selReason(this,'심리')">심리</button>
+            <button class="chip" onclick="selReason(this,'없음')">없음</button>
+          </div>
+          <button class="btn btn-primary" onclick="submitCheckin()">체크인 완료</button>
+        </div>
+        <div class="card">
+          <div class="card-title">이번 주 기록</div>
+          <div class="streak-row" id="streak-row" style="margin-bottom:10px;"></div>
+          <div id="history-list"></div>
+        </div>
+      </div>
+      <div id="daily-result-area" class="hidden">
+        <div id="diag-msg" class="msg-box flow-enter"></div>
+        <div id="intervention-area"></div>
+        <button class="btn btn-ghost" onclick="resetDaily()" style="margin-top:6px;">← 다시 입력</button>
+      </div>
+    </div>
+
+    <!-- ===== WEEKLY ===== -->
+    <div id="screen-weekly" class="screen">
+      <div id="weekly-data-card" class="card">
+        <div class="card-title">이번 주 데이터 (자동 집계)</div>
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-label">주력과목</div><div class="stat-value" id="w-main"><span class="stat-unit">-</span></div></div>
+          <div class="stat-card"><div class="stat-label">실행 상/중</div><div class="stat-value" id="w-good"><span class="stat-unit">-</span></div></div>
+          <div class="stat-card"><div class="stat-label">붕괴 일수</div><div class="stat-value" id="w-crash" style="color:var(--danger)"><span class="stat-unit">-</span></div></div>
+          <div class="stat-card"><div class="stat-label">반복 실패</div><div class="stat-value" style="font-size:16px;" id="w-fail">-</div></div>
+        </div>
+        <div id="weekly-no-data" class="msg-box neutral hidden">
+          <div class="msg-text">아직 체크인 데이터가 없어요. 매일 체크인을 먼저 해주세요.</div>
+        </div>
+        <button class="btn btn-primary" id="weekly-start-btn" onclick="runWeeklyDiag()">주간 진단 시작</button>
+      </div>
+      <div id="weekly-diag-area" class="hidden flow-enter">
+        <div id="w-type-badge"></div>
+        <div id="w-diag-msg" class="msg-box"></div>
+        <div id="w-q-area"></div>
+        <div id="w-action-area"></div>
+        <div id="w-decl-wrap" class="hidden">
+          <div class="divider"></div>
+          <div class="card">
+            <div class="card-title">다음 주 선언</div>
+            <div class="decl-box">
+              <div class="decl-row"><span class="decl-key">주력과목</span><input class="decl-input" id="wd-subject" placeholder="국어 / 수학" /></div>
+              <div class="decl-row"><span class="decl-key">주간 목표</span><input class="decl-input" id="wd-goal" placeholder="상 N일 이상" /></div>
+              <div class="decl-row"><span class="decl-key">수정 포인트</span><input class="decl-input" id="wd-fix" placeholder="자동 입력됨" /></div>
+              <div class="decl-row"><span class="decl-key">한 줄 다짐</span><input class="decl-input" id="wd-oath" placeholder="입력하세요" /></div>
+            </div>
+            <button class="btn btn-primary" onclick="saveWeekly()">선언 저장</button>
+          </div>
+        </div>
+        <div class="saved-banner" id="w-saved">저장됐어요. 내일 체크인 화면 상단에서 확인할 수 있어요.</div>
+        <button class="btn btn-ghost" onclick="resetWeekly()" style="margin-top:4px;">← 처음부터</button>
+      </div>
+    </div>
+
+    <!-- ===== MONTHLY RDR ===== -->
+    <div id="screen-monthly" class="screen">
+      <div id="rdr-intro">
+        <div style="padding:8px 0 14px;">
+          <div class="step-tag">MONTHLY RDR</div>
+          <div class="step-title">감정 정리 +<br>전략 재설계 세션</div>
+          <div class="step-desc">월간 RDR은 반성이 아니에요.<br>어디를 바꿀 것인가를 함께 찾는 시간이에요.<br>15~20분이면 충분해요.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">이번 달 데이터 (자동 집계)</div>
+          <div class="stats-grid">
+            <div class="stat-card"><div class="stat-label">주력 수행률</div><div class="stat-value" id="m-rate"><span class="stat-unit">%</span></div></div>
+            <div class="stat-card"><div class="stat-label">실행 상/중</div><div class="stat-value" id="m-good"><span class="stat-unit">일</span></div></div>
+            <div class="stat-card"><div class="stat-label">붕괴 일수</div><div class="stat-value" id="m-crash" style="color:var(--danger)"><span class="stat-unit">일</span></div></div>
+            <div class="stat-card"><div class="stat-label">주간 흐름</div><div class="stat-value" style="font-size:13px;" id="m-flow">-</div></div>
+          </div>
+          <div class="msg-box neutral" style="margin-bottom:12px;">
+            <div class="msg-label">데이터가 말하는 것</div>
+            <div class="msg-text" id="m-summary">숫자가 이번 달을 말해주고 있어요. 같이 봐요.</div>
+          </div>
+          <button class="btn btn-primary" onclick="startRDR()">RDR 시작하기</button>
+        </div>
+      </div>
+      <div id="rdr-session" class="hidden">
+        <div class="rdr-step-nav">
+          <div class="rdr-step-dot active" id="dot0"></div>
+          <div class="rdr-step-dot" id="dot1"></div>
+          <div class="rdr-step-dot" id="dot2"></div>
+        </div>
+        <div id="rdr-body"></div>
+        <div id="rdr-nav" style="display:flex;gap:8px;margin-top:12px;"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ============================================================
+// STORAGE HELPERS
+// ============================================================
+const STORE_KEY = 'dhd_records';
+const WEEKLY_DECL_KEY = 'dhd_weekly_decl';
+const MONTHLY_DECL_KEY = 'dhd_monthly_decl';
+
+function getRecords() {
+  try { return JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); } catch(e) { return {}; }
+}
+function saveRecord(dateKey, data) {
+  const records = getRecords();
+  records[dateKey] = data;
+  localStorage.setItem(STORE_KEY, JSON.stringify(records));
+}
+function todayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function dateLabel(d) {
+  const dt = new Date(d + 'T00:00:00');
+  return `${dt.getMonth()+1}/${dt.getDate()}`;
+}
+function getWeekKeys() {
+  const keys = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    keys.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`);
+  }
+  return keys;
+}
+function getMonthKeys() {
+  const keys = [];
+  const now = new Date();
+  const y = now.getFullYear(), m = now.getMonth();
+  const daysInMonth = new Date(y, m+1, 0).getDate();
+  for (let i = 1; i <= daysInMonth; i++) {
+    keys.push(`${y}-${String(m+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`);
+  }
+  return keys;
+}
+
+// ============================================================
+// WEEKLY AGGREGATION
+// ============================================================
+function aggregateWeek() {
+  const records = getRecords();
+  const keys = getWeekKeys();
+  let mainDays = 0, goodDays = 0, crashDays = 0;
+  const reasonCount = {};
+  const entries = [];
+  keys.forEach(k => {
+    if (records[k]) {
+      const r = records[k];
+      entries.push({key: k, ...r});
+      if (r.main === 'Y') mainDays++;
+      if (r.rate === '상' || r.rate === '중') goodDays++;
+      if (r.main === 'N' && r.rate === '하') crashDays++;
+      if (r.reason && r.reason !== '없음') {
+        reasonCount[r.reason] = (reasonCount[r.reason] || 0) + 1;
+      }
+    }
+  });
+  const failReason = Object.entries(reasonCount).sort((a,b) => b[1]-a[1])[0]?.[0] || '-';
+  return { mainDays, goodDays, crashDays, failReason, entries, totalDays: entries.length };
+}
+
+// ============================================================
+// MONTHLY AGGREGATION
+// ============================================================
+function aggregateMonth() {
+  const records = getRecords();
+  const keys = getMonthKeys();
+  let mainDays = 0, goodDays = 0, crashDays = 0, totalDays = 0;
+  const reasonCount = {};
+  keys.forEach(k => {
+    if (records[k]) {
+      const r = records[k];
+      totalDays++;
+      if (r.main === 'Y') mainDays++;
+      if (r.rate === '상' || r.rate === '중') goodDays++;
+      if (r.main === 'N' && r.rate === '하') crashDays++;
+      if (r.reason && r.reason !== '없음') {
+        reasonCount[r.reason] = (reasonCount[r.reason] || 0) + 1;
+      }
+    }
+  });
+  const mainRate = totalDays > 0 ? Math.round(mainDays / totalDays * 100) : 0;
+  const failReason = Object.entries(reasonCount).sort((a,b) => b[1]-a[1])[0]?.[0] || '-';
+
+  // weekly type flow
+  const weekTypes = [];
+  for (let w = 0; w < 4; w++) {
+    const wStart = w * 7;
+    let wMain = 0, wGood = 0, wCrash = 0, wCount = 0;
+    for (let d = wStart; d < wStart + 7 && d < keys.length; d++) {
+      if (records[keys[d]]) {
+        wCount++;
+        const r = records[keys[d]];
+        if (r.main === 'Y') wMain++;
+        if (r.rate === '상' || r.rate === '중') wGood++;
+        if (r.main === 'N' && r.rate === '하') wCrash++;
+      }
+    }
+    if (wCount === 0) continue;
+    if (wCrash >= 3 || wMain <= 3) weekTypes.push('C');
+    else if (wMain >= 4 && wGood >= 4) weekTypes.push('A');
+    else weekTypes.push('B');
+  }
+
+  return { mainRate, goodDays, crashDays, failReason, weekTypes: weekTypes.join('→') || '-', totalDays };
+}
+
+// ============================================================
+// STATE
+// ============================================================
+const S = { main: null, rate: null, reason: '없음' };
+
+// ============================================================
+// INIT
+// ============================================================
+(function init() {
+  const d = new Date();
+  document.getElementById('today-label').textContent = `${d.getMonth()+1}월 ${d.getDate()}일`;
+  renderStreak();
+  renderHistory();
+  renderWeeklyData();
+  renderMonthlyData();
+
+  // already checked in today?
+  const rec = getRecords()[todayKey()];
+  if (rec) {
+    S.main = rec.main; S.rate = rec.rate; S.reason = rec.reason;
+  }
+})();
+
+function renderStreak() {
+  const records = getRecords();
+  const keys = getWeekKeys();
+  const row = document.getElementById('streak-row');
+  row.innerHTML = '';
+  keys.forEach((k, i) => {
+    const dot = document.createElement('div');
+    const isToday = i === 6;
+    const done = !!records[k];
+    const mainDone = records[k]?.main === 'Y';
+    dot.className = 'streak-dot' + (isToday ? ' today' : (mainDone ? ' done' : ''));
+    dot.title = dateLabel(k);
+    row.appendChild(dot);
+  });
+  // label
+  const lbl = document.createElement('span');
+  lbl.style.cssText = 'font-size:11px;color:var(--text3);margin-left:4px;';
+  const wk = aggregateWeek();
+  lbl.textContent = `주력 ${wk.mainDays}/7일`;
+  row.appendChild(lbl);
+}
+
+function renderHistory() {
+  const records = getRecords();
+  const keys = getWeekKeys().reverse();
+  const list = document.getElementById('history-list');
+  const items = keys.filter(k => records[k]);
+  if (items.length === 0) {
+    list.innerHTML = '<div style="font-size:13px;color:var(--text3);padding:4px 0;">아직 기록이 없어요.</div>';
+    return;
+  }
+  list.innerHTML = items.slice(0, 5).map(k => {
+    const r = records[k];
+    const rateClass = r.rate === '상' ? 'htag-high' : r.rate === '중' ? 'htag-mid' : 'htag-low';
+    return `<div class="history-item">
+      <span class="history-date">${dateLabel(k)}</span>
+      <div class="history-tags">
+        <span class="htag ${r.main === 'Y' ? 'htag-y' : 'htag-n'}">${r.main === 'Y' ? '주력○' : '주력✗'}</span>
+        <span class="htag ${rateClass}">${r.rate}</span>
+        ${r.reason !== '없음' ? `<span class="htag" style="background:var(--surface2);color:var(--text2);">${r.reason}</span>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderWeeklyData() {
+  const agg = aggregateWeek();
+  document.getElementById('w-main').innerHTML = `${agg.mainDays}<span class="stat-unit">일</span>`;
+  document.getElementById('w-good').innerHTML = `${agg.goodDays}<span class="stat-unit">일</span>`;
+  document.getElementById('w-crash').innerHTML = `${agg.crashDays}<span class="stat-unit">일</span>`;
+  document.getElementById('w-fail').textContent = agg.failReason;
+  if (agg.totalDays === 0) {
+    document.getElementById('weekly-no-data').classList.remove('hidden');
+    document.getElementById('weekly-start-btn').disabled = true;
+    document.getElementById('weekly-start-btn').style.opacity = '0.5';
+  }
+}
+
+function renderMonthlyData() {
+  const agg = aggregateMonth();
+  document.getElementById('m-rate').innerHTML = `${agg.mainRate}<span class="stat-unit">%</span>`;
+  document.getElementById('m-good').innerHTML = `${agg.goodDays}<span class="stat-unit">일</span>`;
+  document.getElementById('m-crash').innerHTML = `${agg.crashDays}<span class="stat-unit">일</span>`;
+  document.getElementById('m-flow').textContent = agg.weekTypes;
+  if (agg.weekTypes.includes('C')) {
+    document.getElementById('m-summary').textContent = '하락 구간이 보여요. RDR로 구조를 바꿔요.';
+  } else if (agg.mainRate >= 70) {
+    document.getElementById('m-summary').textContent = `주력과목 수행률 ${agg.mainRate}%. 이 페이스면 격차가 벌어지고 있어요.`;
+  }
+}
+
+// ============================================================
+// DAILY CHECK-IN
+// ============================================================
+function selMain(v) {
+  S.main = v;
+  document.getElementById('btn-y').className = 'toggle-btn' + (v==='Y' ? ' sel-y' : '');
+  document.getElementById('btn-n').className = 'toggle-btn' + (v==='N' ? ' sel-n' : '');
+}
+function selRate(v) {
+  S.rate = v;
+  document.getElementById('rate-high').className = 'rate-btn' + (v==='상' ? ' sel-high' : '');
+  document.getElementById('rate-mid').className = 'rate-btn' + (v==='중' ? ' sel-mid' : '');
+  document.getElementById('rate-low').className = 'rate-btn' + (v==='하' ? ' sel-low' : '');
+}
+function selReason(el, v) {
+  S.reason = v;
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function submitCheckin() {
+  if (!S.main || !S.rate) { alert('주력과목 여부와 실행률을 선택해주세요.'); return; }
+  // Save
+  saveRecord(todayKey(), { main: S.main, rate: S.rate, reason: S.reason, ts: Date.now() });
+  // Show result
+  const diag = getDiag(S.main, S.rate, S.reason);
+  const msgEl = document.getElementById('diag-msg');
+  msgEl.className = 'msg-box flow-enter ' + diag.tone;
+  msgEl.innerHTML = `<div class="msg-label">${diag.stage}</div><div class="msg-text">${diag.msg}</div>`;
+  document.getElementById('intervention-area').innerHTML = buildIntervention(S.main, S.rate, S.reason);
+  document.getElementById('daily-input-area').classList.add('hidden');
+  document.getElementById('daily-result-area').classList.remove('hidden');
+  renderStreak();
+  renderHistory();
+  renderWeeklyData();
+  renderMonthlyData();
+}
+
+function resetDaily() {
+  S.main = null; S.rate = null; S.reason = '없음';
+  ['btn-y','btn-n'].forEach(id => document.getElementById(id).className = 'toggle-btn');
+  ['rate-high','rate-mid','rate-low'].forEach(id => document.getElementById(id).className = 'rate-btn');
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+  document.getElementById('daily-input-area').classList.remove('hidden');
+  document.getElementById('daily-result-area').classList.add('hidden');
+}
+
+function getDiag(main, rate, reason) {
+  if (main==='Y' && rate==='상') return {tone:'praise', stage:'1단계', msg:'완벽해요. 당신은 지금 상위 1% N수생의 하루를 살았습니다.'};
+  if (main==='Y' && rate==='중') {
+    if (reason==='체력') return {tone:'care', stage:'2단계', msg:'주력과목 지킨 거 자체가 오늘 전부예요. 체력 소진 상태에서 그게 됐다는 거 대단한 거예요.'};
+    if (reason==='심리') return {tone:'care', stage:'2단계', msg:'마음이 무거웠던 하루였군요. 그래도 주력과목은 놓지 않았어요.'};
+    return {tone:'praise', stage:'2단계', msg:'주력과목은 지켰어요. 이 정도면 상위권 레이스에 올라와 있는 거예요.'};
+  }
+  if (main==='Y' && rate==='하') {
+    if (reason==='체력') return {tone:'care', stage:'3단계', msg:'오늘 많이 지쳤구나. 주력과목 챙긴 것만으로 충분해요.'};
+    if (reason==='심리') return {tone:'care', stage:'3단계', msg:'마음이 무거웠던 하루였군요. 그래도 주력과목은 놓지 않았어요.'};
+    return {tone:'warn-msg', stage:'2단계', msg:'주력과목은 지켰는데 전체 볼륨이 줄었네요. 어디서 시간이 빠졌는지 같이 봐요.'};
+  }
+  if (main==='N' && rate==='상') return {tone:'warn-msg', stage:'2단계', msg:'열심히 했는데 주력과목이 빠졌네요. 이 패턴이 반복되면 위험해요.'};
+  if (main==='N' && rate==='중') {
+    if (reason==='심리') return {tone:'care', stage:'3단계', msg:'마음이 많이 무거운 하루였겠다. 잘 버텼어요.'};
+    return {tone:'warn-msg', stage:'2단계', msg:'오늘 힘이 없었죠. 그럴 수 있어요.'};
+  }
+  if (main==='N' && rate==='하') {
+    if (reason==='체력') return {tone:'care', stage:'3단계', msg:'몸이 먼저 무너진 날이에요. 오늘은 회복이 전략이에요.'};
+    if (reason==='심리') return {tone:'care', stage:'3단계', msg:'오늘 많이 힘들었겠다. 감정이 먼저야.'};
+    return {tone:'care', stage:'3단계', msg:'오늘 많이 힘들었구나. 그럴 때도 있어. 내일 주력과목 2시간만.'};
+  }
+  return {tone:'neutral', stage:'체크인', msg:'오늘도 기록됐어요.'};
+}
+
+// ============================================================
+// INTERVENTION TREES
+// ============================================================
+function buildIntervention(main, rate, reason) {
+  const trees = { '전략': strategyTree, '동기': motivTree, '심리': emotTree, '체력': staminaTree };
+  return (trees[reason] || defaultAction)();
+}
+
+function showA(id) {
+  document.querySelectorAll('.action-box').forEach(b => b.classList.add('hidden'));
+  const el = document.getElementById(id);
+  if (el) { el.classList.remove('hidden'); el.classList.add('flow-enter'); el.scrollIntoView({behavior:'smooth',block:'nearest'}); }
+}
+
+function strategyTree() {
+  return `<div id="str-tree"><div class="q-box flow-enter">
+    <div class="q-text">지금 하고 있는 공부가 목표 대학 합격과 직접 연결되어 있다고 느끼나요?</div>
+    <button class="btn" onclick="strQ2A()"><div class="btn-icon">○</div>연결된다</button>
+    <button class="btn" onclick="strQ2B()"><div class="btn-icon">?</div>잘 모르겠다 / 아닌 것 같다</button>
+  </div></div>`;
+}
+function strQ2A() {
+  document.getElementById('str-tree').insertAdjacentHTML('beforeend',`<div class="q-box flow-enter">
+    <div class="q-text">오늘 주력과목을 하루 중 몇 번째 순서로 했나요?</div>
+    <button class="btn" onclick="showA('str-a1')"><div class="btn-icon">1번</div>첫 번째</button>
+    <button class="btn" onclick="showA('str-a2')"><div class="btn-icon">2+</div>두 번째 이후</button>
+  </div>
+  <div class="action-box hidden" id="str-a1"><div class="action-label">오늘의 행동</div><div class="action-text">오늘 구조 그대로 내일도. 방향은 잡혀 있어요. 믿고 가세요.</div></div>
+  <div class="action-box hidden" id="str-a2"><div class="action-label">오늘의 행동</div><div class="action-text">내일 주력과목을 하루 첫 번째 블록으로 옮기세요. 순서가 전략이에요.</div></div>`);
+}
+function strQ2B() {
+  document.getElementById('str-tree').insertAdjacentHTML('beforeend',`<div class="q-box flow-enter">
+    <div class="q-text">지금 가장 불안한 과목이 주력과목인가요?</div>
+    <button class="btn" onclick="showA('str-b1')"><div class="btn-icon">주</div>주력과목이 불안하다</button>
+    <button class="btn" onclick="showA('str-b2')"><div class="btn-icon">기</div>다른 과목이 불안하다</button>
+  </div>
+  <div class="action-box hidden" id="str-b1"><div class="action-label">오늘의 행동</div><div class="action-text">내일 주력과목 막힌 단원 1개만 다시 잡아요. 범위 좁힐수록 방향이 생겨요.</div></div>
+  <div class="action-box hidden" id="str-b2"><div class="action-label">오늘의 행동</div><div class="action-text">불안한 과목은 주력과목 이후에 2시간. 불안감이 주력과목 시간을 잠식하게 두면 안 돼요.</div></div>`);
+}
+
+function motivTree() {
+  return `<div id="mot-tree"><div class="q-box flow-enter">
+    <div class="q-text">오늘 공부가 하기 싫었던 게 주력과목 때문인가요, 전체 다 하기 싫었나요?</div>
+    <button class="btn" onclick="motQ2A()"><div class="btn-icon">주</div>주력과목만 하기 싫었다</button>
+    <button class="btn" onclick="motQ2B()"><div class="btn-icon">전</div>전체 다 하기 싫었다</button>
+  </div></div>`;
+}
+function motQ2A() {
+  document.getElementById('mot-tree').insertAdjacentHTML('beforeend',`<div class="q-box flow-enter">
+    <div class="q-text">주력과목이 하기 싫었던 이유가 뭔가요?</div>
+    <button class="btn" onclick="showA('mot-a1')"><div class="btn-icon">어</div>너무 어려워서</button>
+    <button class="btn" onclick="showA('mot-a2')"><div class="btn-icon">지</div>지루해서</button>
+    <button class="btn" onclick="showA('mot-a3')"><div class="btn-icon">점</div>성적이 안 올라서</button>
+  </div>
+  <div class="action-box hidden" id="mot-a1"><div class="action-label">오늘의 행동</div><div class="action-text">내일 주력과목에서 제일 쉬운 단원부터 시작하세요. 작은 성공이 동기를 되살려요.</div></div>
+  <div class="action-box hidden" id="mot-a2"><div class="action-label">오늘의 행동</div><div class="action-text">내일 주력과목 문제 유형 1개만 바꿔보세요. 같은 과목, 다른 자극.</div></div>
+  <div class="action-box hidden" id="mot-a3"><div class="action-label">오늘의 행동</div><div class="action-text">점수는 지금 안 올라도 돼요. 주력과목 유지가 지금 할 일의 전부예요. 주간 코칭에서 같이 봐요.</div></div>`);
+}
+function motQ2B() {
+  document.getElementById('mot-tree').insertAdjacentHTML('beforeend',`<div class="q-box flow-enter">
+    <div class="q-text">이 공부를 왜 하는지가 흐릿해진 건가요, 몸이 지쳐서 그런 건가요?</div>
+    <button class="btn" onclick="showA('mot-b1')"><div class="btn-icon">?</div>이유가 흐릿해졌다</button>
+    <button class="btn" onclick="loadStamina()"><div class="btn-icon">체</div>몸이 지쳐서</button>
+  </div>
+  <div class="action-box hidden" id="mot-b1"><div class="action-label">오늘의 행동</div><div class="action-text">이번 주 주간 코칭 전에 딱 하나만: 내가 가고 싶은 곳 이름 하나 써봐요. 방향이 없으면 동기도 없어요.</div></div>`);
+}
+function loadStamina() {
+  document.getElementById('intervention-area').innerHTML = staminaTree();
+}
+
+function emotTree() {
+  return `<div id="emot-tree"><div class="q-box flow-enter">
+    <div class="q-text">지금 가장 크게 울리는 감정이 뭔가요?</div>
+    <button class="btn" onclick="emotQ('anxiety')"><div class="btn-icon">불</div>불안 (성적, 미래)</button>
+    <button class="btn" onclick="emotQ('lonely')"><div class="btn-icon">고</div>외로움 / 고립감</button>
+    <button class="btn" onclick="emotQ('empty')"><div class="btn-icon">무</div>무기력 / 공허함</button>
+    <button class="btn" onclick="emotQ('compare')"><div class="btn-icon">비</div>주변 비교</button>
+  </div></div>`;
+}
+function emotQ(type) {
+  const map = {
+    anxiety: `<div class="q-box flow-enter"><div class="q-text">그 불안이 지금 당장 해결할 문제에서 오나요, 아직 오지 않은 미래 걱정인가요?</div>
+      <button class="btn" onclick="showA('em-a1')"><div class="btn-icon">지</div>지금 당장 문제</button>
+      <button class="btn" onclick="showA('em-a2')"><div class="btn-icon">미</div>미래 걱정</button>
+    </div>
+    <div class="action-box hidden" id="em-a1"><div class="action-label">오늘의 행동</div><div class="action-text">지금 문제를 종이에 한 줄로 적어보세요. 적으면 크기가 작아져요. 그다음 주력과목 2시간.</div></div>
+    <div class="action-box hidden" id="em-a2"><div class="action-label">오늘의 행동</div><div class="action-text">미래 걱정은 지금 데이터가 없어서 생기는 거예요. 오늘 주력과목 2시간이 그 불안을 줄이는 유일한 방법이에요.</div></div>`,
+    lonely: `<div class="q-box flow-enter"><div class="q-text">주변에 지금 상황을 아는 사람이 있나요?</div>
+      <button class="btn" onclick="showA('em-l1')"><div class="btn-icon">○</div>있다</button>
+      <button class="btn" onclick="showA('em-l2')"><div class="btn-icon">×</div>없다</button>
+    </div>
+    <div class="action-box hidden" id="em-l1"><div class="action-label">오늘의 행동</div><div class="action-text">오늘 그 사람한테 짧게 연락해보세요. 혼자 버티는 게 전략이 아니에요.</div></div>
+    <div class="action-box hidden" id="em-l2"><div class="action-label">오늘의 행동</div><div class="action-text">오늘은 주력과목 2시간만. 사람 연결은 주간 코칭 이후에 같이 생각해봐요.</div></div>`,
+    empty: `<div class="q-box flow-enter"><div class="q-text">아무것도 하기 싫은 건가요, 하고 싶은데 안 되는 건가요?</div>
+      <button class="btn" onclick="showA('em-e1')"><div class="btn-icon">무</div>아무것도 하기 싫다</button>
+      <button class="btn" onclick="showA('em-e2')"><div class="btn-icon">하</div>하고 싶은데 안 됨</button>
+    </div>
+    <div class="action-box hidden" id="em-e1"><div class="action-label">오늘의 행동</div><div class="action-text">오늘은 여기서 멈춰요. 내일 주력과목 2시간만. 무기력은 쉬어야 풀려요.</div></div>
+    <div class="action-box hidden" id="em-e2"><div class="action-label">오늘의 행동</div><div class="action-text">뭘 하고 싶은지 한 줄만 적어봐요. 그게 다음 달 방향이 될 수 있어요.</div></div>`,
+    compare: `<div class="q-box flow-enter"><div class="q-text">비교 대상이 같은 독재생인가요, 재학생 / SNS인가요?</div>
+      <button class="btn" onclick="showA('em-c1')"><div class="btn-icon">독</div>같은 독재생</button>
+      <button class="btn" onclick="showA('em-c2')"><div class="btn-icon">SNS</div>재학생 / SNS</button>
+    </div>
+    <div class="action-box hidden" id="em-c1"><div class="action-label">오늘의 행동</div><div class="action-text">그 사람 페이스는 그 사람 데이터예요. 당신 레이스에 집중하세요. 비교는 전략이 아니에요.</div></div>
+    <div class="action-box hidden" id="em-c2"><div class="action-label">오늘의 행동</div><div class="action-text">SNS는 지금 닫아요. 재학생 페이스는 당신 전략과 무관해요. 오늘 주력과목 2시간만.</div></div>`
+  };
+  document.getElementById('emot-tree').insertAdjacentHTML('beforeend', map[type]);
+}
+
+function staminaTree() {
+  return `<div id="stam-tree"><div class="q-box flow-enter">
+    <div class="q-text">오늘 체력이 안 된 이유가 뭔가요?</div>
+    <button class="btn" onclick="stamQ('sleep')"><div class="btn-icon">수</div>수면 부족</button>
+    <button class="btn" onclick="stamQ('food')"><div class="btn-icon">식</div>식사 / 에너지 부족</button>
+    <button class="btn" onclick="showA('st-sick')"><div class="btn-icon">몸</div>몸이 아픔</button>
+    <button class="btn" onclick="stamQ('unknown')"><div class="btn-icon">?</div>이유 모르게 지침</button>
+  </div>
+  <div class="action-box hidden" id="st-sick"><div class="action-label">오늘의 행동</div><div class="action-text">몸이 아프면 공부가 전략이 아니에요. 오늘 쉬세요. 내일 컨디션 보고 주력과목 2시간만.</div></div>
+  </div>`;
+}
+function stamQ(type) {
+  const map = {
+    sleep: `<div class="q-box flow-enter"><div class="q-text">어젯밤 몇 시에 잤나요?</div>
+      <button class="btn" onclick="showA('sl-a')"><div class="btn-icon">일</div>자정 이전</button>
+      <button class="btn" onclick="showA('sl-b')"><div class="btn-icon">늦</div>자정 이후</button>
+    </div>
+    <div class="action-box hidden" id="sl-a"><div class="action-label">오늘의 행동</div><div class="action-text">수면은 충분한데 피곤하다면 낮잠 20분이 오후 블록을 살려요. 내일 취침 시간 유지하세요.</div></div>
+    <div class="action-box hidden" id="sl-b"><div class="action-label">오늘의 행동</div><div class="action-text">오늘 밤 자정 전에 자세요. 수면 시간이 내일 주력과목 집중력을 결정해요.</div></div>`,
+    food: `<div class="q-box flow-enter"><div class="q-text">오늘 식사를 제대로 했나요?</div>
+      <button class="btn" onclick="showA('fd-a')"><div class="btn-icon">○</div>했다</button>
+      <button class="btn" onclick="showA('fd-b')"><div class="btn-icon">×</div>못 했다</button>
+    </div>
+    <div class="action-box hidden" id="fd-a"><div class="action-label">오늘의 행동</div><div class="action-text">에너지 소모가 큰 날이에요. 오후 중간에 10분 휴식 블록 하나 넣으세요.</div></div>
+    <div class="action-box hidden" id="fd-b"><div class="action-label">오늘의 행동</div><div class="action-text">지금 당장 뭔가 드세요. 뇌는 포도당으로 돌아가요. 식사 후 주력과목 2시간.</div></div>`,
+    unknown: `<div class="q-box flow-enter"><div class="q-text">이런 날이 이번 주에 며칠째인가요?</div>
+      <button class="btn" onclick="showA('uk-a')"><div class="btn-icon">1</div>오늘 처음</button>
+      <button class="btn" onclick="showA('uk-b')"><div class="btn-icon">2+</div>2일 이상</button>
+    </div>
+    <div class="action-box hidden" id="uk-a"><div class="action-label">오늘의 행동</div><div class="action-text">오늘 하루 몸이 보내는 신호예요. 일찍 자고 내일 리셋.</div></div>
+    <div class="action-box hidden" id="uk-b"><div class="action-label">오늘의 행동</div><div class="action-text">2일 이상 지속되면 구조 문제예요. 이번 주 주간 코칭에서 하루 구조 같이 봐요. 오늘은 주력과목 2시간만.</div></div>`
+  };
+  document.getElementById('stam-tree').insertAdjacentHTML('beforeend', map[type]);
+}
+
+function defaultAction() {
+  return `<div class="action-box flow-enter"><div class="action-label">오늘의 행동</div><div class="action-text">내일도 주력과목 먼저. 오늘 기록됐어요.</div></div>`;
+}
+
+// ============================================================
+// WEEKLY COACHING
+// ============================================================
+function runWeeklyDiag() {
+  const agg = aggregateWeek();
+  let type, badgeHtml, msg, tone;
+  if (agg.crashDays >= 3 || agg.mainDays <= 4) {
+    type = 'C'; badgeHtml = '<span class="type-badge type-c">C 이탈형</span>';
+    msg = '이번 주 많이 힘들었죠. 지금 필요한 건 반성이 아니라 구조 수정이에요.'; tone = 'care';
+  } else if (agg.mainDays >= 5 && agg.goodDays >= 5) {
+    type = 'A'; badgeHtml = '<span class="type-badge type-a">A 안정형</span>';
+    msg = `이번 주 레이스 잘 달렸어요. 주력과목 ${agg.mainDays}일, 실행 상/중 ${agg.goodDays}일. 이 페이스면 격차가 벌어지고 있어요.`; tone = 'praise';
+  } else {
+    type = 'B'; badgeHtml = '<span class="type-badge type-b">B 누수형</span>';
+    msg = '주력과목은 지켰는데 전체 볼륨이 줄었어요. 어디서 시간이 빠졌는지 같이 봐요.'; tone = 'warn-msg';
+  }
+  document.getElementById('weekly-data-card').classList.add('hidden');
+  const diagArea = document.getElementById('weekly-diag-area');
+  diagArea.classList.remove('hidden');
+  document.getElementById('w-type-badge').innerHTML = badgeHtml;
+  const msgEl = document.getElementById('w-diag-msg');
+  msgEl.className = 'msg-box flow-enter ' + tone;
+  msgEl.innerHTML = `<div class="msg-text">${msg}</div>`;
+
+  let qHtml = '';
+  if (type === 'A') {
+    qHtml = `<div class="q-box flow-enter"><div class="q-text">다음 주 주력과목 볼륨을 어떻게 할까요?</div>
+      <button class="btn" onclick="setWFix('주력과목 볼륨 +1시간 상향')"><div class="btn-icon">+</div>+1시간 상향</button>
+      <button class="btn" onclick="setWFix('현행 구조 유지')"><div class="btn-icon">=</div>현행 유지</button>
+    </div>`;
+  } else if (type === 'B') {
+    qHtml = `<div class="q-box flow-enter"><div class="q-text">이번 주 공부가 가장 많이 무너진 시간대가 언제인가요?</div>
+      <button class="btn" onclick="setWFix('오전 9시 이전 주력과목 첫 블록 시작')"><div class="btn-icon">오</div>오전</button>
+      <button class="btn" onclick="setWFix('점심 직후 주력과목 블록 배치')"><div class="btn-icon">오</div>오후</button>
+      <button class="btn" onclick="setWFix('저녁 블록 주력과목 복습으로 고정')"><div class="btn-icon">저</div>저녁</button>
+    </div>`;
+  } else {
+    qHtml = `<div class="q-box flow-enter"><div class="q-text">주력과목이 밀린 이유가 뭔가요?</div>
+      <button class="btn" onclick="setWFix('주력과목 첫 번째 블록 고정')"><div class="btn-icon">시</div>시간이 없었다</button>
+      <button class="btn" onclick="setWFix('주력과목 하루 4시간 × 5일 최소 목표')"><div class="btn-icon">싫</div>하기 싫었다</button>
+      <button class="btn" onclick="setWFix('목표 낮추고 다시 붙기 — 주력 4시간 × 5일')"><div class="btn-icon">몸</div>몸/마음이 안 됐다</button>
+    </div>`;
+  }
+  document.getElementById('w-q-area').innerHTML = qHtml;
+}
+
+function setWFix(txt) {
+  document.getElementById('wd-fix').value = txt;
+  const wrap = document.getElementById('w-decl-wrap');
+  wrap.classList.remove('hidden');
+  wrap.classList.add('flow-enter');
+  wrap.scrollIntoView({behavior:'smooth', block:'start'});
+}
+function saveWeekly() {
+  const decl = {
+    subject: document.getElementById('wd-subject').value,
+    goal: document.getElementById('wd-goal').value,
+    fix: document.getElementById('wd-fix').value,
+    oath: document.getElementById('wd-oath').value,
+    savedAt: Date.now()
+  };
+  localStorage.setItem(WEEKLY_DECL_KEY, JSON.stringify(decl));
+  document.getElementById('w-decl-wrap').classList.add('hidden');
+  document.getElementById('w-saved').style.display = 'block';
+}
+function resetWeekly() {
+  document.getElementById('weekly-data-card').classList.remove('hidden');
+  document.getElementById('weekly-diag-area').classList.add('hidden');
+  document.getElementById('w-saved').style.display = 'none';
+  document.getElementById('w-decl-wrap').classList.add('hidden');
+  document.getElementById('w-q-area').innerHTML = '';
+  renderWeeklyData();
+}
+
+// ============================================================
+// MONTHLY RDR
+// ============================================================
+let rdrIdx = 0;
+const rdrSteps = [
+  {
+    tag: 'R — REFLECT', title: '감정을 꺼내요',
+    desc: '공부 얘기는 잠깐 뒤로 미뤄요. 감정이 먼저예요.',
+    html: `
+      <div class="q-box"><div class="q-text">이번 달 나를 가장 흔들었던 감정은 무엇인가요?</div>
+        <div class="chip-group">
+          <button class="chip" onclick="rchip(this)">불안</button>
+          <button class="chip" onclick="rchip(this)">조급함</button>
+          <button class="chip" onclick="rchip(this)">무기력</button>
+          <button class="chip" onclick="rchip(this)">외로움</button>
+          <button class="chip" onclick="rchip(this)">기타</button>
+        </div>
+      </div>
+      <div class="q-box"><div class="q-text">그 감정이 가장 강하게 올라온 순간은 언제였나요?</div>
+        <textarea rows="2" placeholder="간단히 적어보세요" id="r2"></textarea>
+      </div>
+      <div class="q-box"><div class="q-text">이번 달 가장 잘 버텼다고 느낀 날은 언제인가요? 그날 뭐가 달랐나요?</div>
+        <textarea rows="2" placeholder="간단히 적어보세요" id="r3"></textarea>
+      </div>
+      <div class="q-box"><div class="q-text">지금 이 순간, 나에게 필요한 말 한 마디는?</div>
+        <textarea rows="2" placeholder="스스로에게 해주고 싶은 말" id="r4"></textarea>
+      </div>`
+  },
+  {
+    tag: 'D — DIAGNOSE', title: '데이터로 봐요',
+    desc: '숫자를 죄책감의 도구로 쓰지 않아요. 패턴을 찾는 거예요.',
+    html: () => {
+      const agg = aggregateMonth();
+      return `
+      <div class="msg-box neutral" style="margin-bottom:12px;">
+        <div class="msg-label">이번 달 핵심 데이터</div>
+        <div class="msg-text">주력 수행률: ${agg.mainRate}% · 주간 흐름: ${agg.weekTypes}<br>반복 실패 원인: ${agg.failReason} · 붕괴: ${agg.crashDays}일</div>
+      </div>
+      <div class="q-box"><div class="q-text">위 데이터에서 가장 눈에 걸리는 것이 뭔가요?</div>
+        <div class="chip-group">
+          <button class="chip" onclick="rchip(this)">주력과목 수행률</button>
+          <button class="chip" onclick="rchip(this)">반복 실패 원인</button>
+          <button class="chip" onclick="rchip(this)">주간 하락 흐름</button>
+        </div>
+      </div>
+      <div class="q-box"><div class="q-text">이 패턴이 언제부터 시작됐나요?</div>
+        <div class="chip-group">
+          <button class="chip" onclick="rchip(this)">1주차</button>
+          <button class="chip" onclick="rchip(this)">2주차</button>
+          <button class="chip" onclick="rchip(this)">3주차</button>
+          <button class="chip" onclick="rchip(this)">처음부터</button>
+        </div>
+      </div>
+      <div class="q-box"><div class="q-text">이번 달 가장 잘 버틴 주는 몇 주차였나요? 그 주 뭐가 달랐나요?</div>
+        <textarea rows="2" placeholder="간단히 적어보세요" id="d3"></textarea>
+      </div>`;
+    }
+  },
+  {
+    tag: 'R — REDESIGN', title: '전략을 다시 짜요',
+    desc: '반성이 아니라 구조 수정이에요. 어디를 바꿀 것인가.',
+    html: `
+      <div class="q-box"><div class="q-text">다음 달 주력과목은 유지할 것인가, 바꿀 것인가요?</div>
+        <div class="toggle-group">
+          <button class="toggle-btn" onclick="this.className='toggle-btn sel-y'">유지</button>
+          <button class="toggle-btn" onclick="this.className='toggle-btn sel-n'">변경</button>
+        </div>
+      </div>
+      <div class="q-box"><div class="q-text">이번 달 패턴을 바탕으로 다음 달 바꿀 것 2가지는?</div>
+        <textarea rows="2" placeholder="수정 전략 ①" id="rd2" style="margin-bottom:8px;"></textarea>
+        <textarea rows="2" placeholder="수정 전략 ②" id="rd3"></textarea>
+      </div>
+      <div class="q-box"><div class="q-text">다음 달 나를 지탱할 한 줄 기준은?</div>
+        <textarea rows="2" placeholder="예: 주력과목 4시간은 무슨 일이 있어도 건드리지 않는다" id="rd4"></textarea>
+      </div>
+      <div class="divider"></div>
+      <div class="card-title" style="margin-bottom:10px;">다음 달 전략 선언</div>
+      <div class="decl-box">
+        <div class="decl-row"><span class="decl-key">주력과목</span><input class="decl-input" placeholder="국어 / 수학" id="m-subj" /></div>
+        <div class="decl-row"><span class="decl-key">목표 등급</span><input class="decl-input" placeholder="N등급" id="m-grade" /></div>
+        <div class="decl-row"><span class="decl-key">일일 투자 시간</span><input class="decl-input" placeholder="N시간" id="m-time" /></div>
+        <div class="decl-row"><span class="decl-key">수정 전략 ①</span><input class="decl-input" placeholder="입력하세요" id="m-fix1" /></div>
+        <div class="decl-row"><span class="decl-key">수정 전략 ②</span><input class="decl-input" placeholder="입력하세요" id="m-fix2" /></div>
+        <div class="decl-row"><span class="decl-key">한 줄 기준</span><input class="decl-input" placeholder="입력하세요" id="m-crit" /></div>
+      </div>`
+  }
+];
+
+function startRDR() {
+  rdrIdx = 0;
+  document.getElementById('rdr-intro').classList.add('hidden');
+  document.getElementById('rdr-session').classList.remove('hidden');
+  renderRDR();
+}
+function renderRDR() {
+  const s = rdrSteps[rdrIdx];
+  ['dot0','dot1','dot2'].forEach((id,i) => {
+    document.getElementById(id).className = 'rdr-step-dot' + (i < rdrIdx ? ' done' : i === rdrIdx ? ' active' : '');
+  });
+  const html = typeof s.html === 'function' ? s.html() : s.html;
+  document.getElementById('rdr-body').innerHTML = `<div class="flow-enter">
+    <div class="step-tag">${s.tag}</div>
+    <div class="step-title">${s.title}</div>
+    <div class="step-desc">${s.desc}</div>
+    ${html}
+  </div>`;
+  const nav = document.getElementById('rdr-nav');
+  if (rdrIdx < rdrSteps.length - 1) {
+    nav.innerHTML = `<button class="btn btn-primary" onclick="nextRDR()" style="flex:1;">다음 단계 →</button>`;
+  } else {
+    nav.innerHTML = `<button class="btn btn-primary" onclick="saveRDR()" style="flex:1;">선언 저장하기</button>`;
+  }
+}
+function nextRDR() {
+  if (rdrIdx < rdrSteps.length - 1) { rdrIdx++; renderRDR(); document.getElementById('rdr-session').scrollIntoView({behavior:'smooth'}); }
+}
+function saveRDR() {
+  const decl = {
+    subject: document.getElementById('m-subj')?.value || '',
+    grade: document.getElementById('m-grade')?.value || '',
+    time: document.getElementById('m-time')?.value || '',
+    fix1: document.getElementById('m-fix1')?.value || '',
+    fix2: document.getElementById('m-fix2')?.value || '',
+    crit: document.getElementById('m-crit')?.value || '',
+    savedAt: Date.now()
+  };
+  localStorage.setItem(MONTHLY_DECL_KEY, JSON.stringify(decl));
+  document.getElementById('rdr-nav').innerHTML = `<div class="msg-box praise flow-enter" style="width:100%;margin-bottom:0;"><div class="msg-text">저장됐어요. 다음 달 매일 체크인에서 선언을 확인할 수 있어요.</div></div>`;
+}
+function rchip(el) {
+  const parent = el.closest('.chip-group');
+  if (parent) parent.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', ['daily','weekly','monthly'][i] === tab));
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + tab).classList.add('active');
+  if (tab === 'weekly') { renderWeeklyData(); resetWeekly(); }
+  if (tab === 'monthly') renderMonthlyData();
+}
+</script>
+</body>
+</html>
