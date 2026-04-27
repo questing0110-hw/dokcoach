@@ -347,6 +347,7 @@ textarea::placeholder { color: var(--text3); }
             <button class="chip" onclick="selReason(this,'체력')">체력</button>
             <button class="chip" onclick="selReason(this,'심리')">심리</button>
             <button class="chip" onclick="selReason(this,'없음')">없음</button>
+            <button class="chip" onclick="selReason(this,'기타')">기타</button>
           </div>
           <button class="btn btn-primary" onclick="submitCheckin()">체크인 완료</button>
         </div>
@@ -723,7 +724,7 @@ function getDiag(main, rate, reason) {
 // INTERVENTION TREES
 // ============================================================
 function buildIntervention(main, rate, reason) {
-  const trees = { '전략': strategyTree, '동기': motivTree, '심리': emotTree, '체력': staminaTree };
+  const trees = { '전략': strategyTree, '동기': motivTree, '심리': emotTree, '체력': staminaTree, '기타': etcTree };
   return (trees[reason] || defaultAction)();
 }
 
@@ -863,7 +864,20 @@ function stamQ(type) {
   document.getElementById('stam-tree').insertAdjacentHTML('beforeend', map[type]);
 }
 
-function defaultAction() {
+function etcTree() {
+  return `<div id="etc-tree"><div class="q-box flow-enter">
+    <div class="q-text">오늘 공부가 잘 안 된 이유를 한 마디로 표현하면?</div>
+    <button class="btn" onclick="showA('etc-a1')"><div class="btn-icon">환</div>환경 문제 (공간, 소음 등)</button>
+    <button class="btn" onclick="showA('etc-a2')"><div class="btn-icon">일</div>갑자기 생긴 일 (약속, 가족 등)</button>
+    <button class="btn" onclick="showA('etc-a3')"><div class="btn-icon">별</div>그냥 오늘 하루 별로였다</button>
+    <button class="btn" onclick="showA('etc-a4')"><div class="btn-icon">?</div>잘 모르겠다</button>
+  </div>
+  <div class="action-box hidden" id="etc-a1"><div class="action-label">오늘의 행동</div><div class="action-text">내일 공부 공간 하나만 바꿔보세요. 환경이 집중력을 만들어요.</div></div>
+  <div class="action-box hidden" id="etc-a2"><div class="action-label">오늘의 행동</div><div class="action-text">예외적인 하루예요. 내일 주력과목 2시간으로 리셋.</div></div>
+  <div class="action-box hidden" id="etc-a3"><div class="action-label">오늘의 행동</div><div class="action-text">그런 날 있어요. 내일 주력과목 2시간만.</div></div>
+  <div class="action-box hidden" id="etc-a4"><div class="action-label">오늘의 행동</div><div class="action-text">내일은 주력과목 최소한 4시간 해봅시다.</div></div>
+  </div>`;
+}
   return `<div class="action-box flow-enter"><div class="action-label">오늘의 행동</div><div class="action-text">내일도 주력과목 먼저. 오늘 기록됐어요.</div></div>`;
 }
 
