@@ -878,6 +878,8 @@ function etcTree() {
   <div class="action-box hidden" id="etc-a4"><div class="action-label">오늘의 행동</div><div class="action-text">내일은 주력과목 최소한 4시간 해봅시다.</div></div>
   </div>`;
 }
+
+function defaultAction() {
   return `<div class="action-box flow-enter"><div class="action-label">오늘의 행동</div><div class="action-text">내일도 주력과목 먼저. 오늘 기록됐어요.</div></div>`;
 }
 
@@ -1154,7 +1156,7 @@ function renderSeasonBanner() {
       <div style="font-size:14px;line-height:1.75;color:var(--text);white-space:pre-line;">${data.msg}</div>
     </div>`;
 
-  const screen = document.getElementById('screen-daily');
+  const screen = document.getElementById('daily-input-area');
   screen.insertBefore(banner, screen.firstChild);
 }
 
